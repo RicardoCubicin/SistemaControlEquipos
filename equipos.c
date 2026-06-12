@@ -28,5 +28,24 @@ int esSoloLetras(char cadena[]) {
 }
 
 int main() {
+    int opcion;
+    do {
+        printf("\n=== SISTEMA DE CONTROL DE EQUIPOS ===\n");
+        printf("1. Registrar equipos\n2. Mostrar equipos registrados\n3. Buscar equipo por codigo\n");
+        printf("4. Modificar informacion de equipo\n5. Eliminar equipo\n6. Salir\n");
+        printf("Seleccione una opcion: ");
+        
+        if (scanf("%d", &opcion) != 1) { limpiarBuffer(); opcion = 0; }
+
+        switch(opcion) {
+            case 1: printf("\nOpcion 1 en construccion...\n"); break;
+            case 2: printf("\nOpcion 2 en construccion...\n"); break;
+            case 3: printf("\nOpcion 3 en construccion...\n"); break;
+            case 4: printf("\nOpcion 4 en construccion...\n"); break;
+            case 5: printf("\nOpcion 5 en construccion...\n"); break;
+            case 6: printf("Saliendo...\n"); break;
+            default: printf("Opcion invalida.\n");
+        }
+    } while(opcion != 6);
     return 0;
 }
