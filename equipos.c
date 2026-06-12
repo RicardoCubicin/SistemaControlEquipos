@@ -98,7 +98,7 @@ void buscarEquipo() {
     int codBuscado, encontrado = 0;
     Equipo eq;
     printf("\nIngrese el codigo a buscar: ");
-    while(scanf("%d", &codBuscado) != 1) { limpiarBuffer(); printf("Error: Ingrese solo numeros: "); }
+    while(scanf("%d", &codBuscado) != 1) { limpiarBuffer(); printf("Error: Ingrese solo digitos validos: "); }
     limpiarBuffer();
 
     while (fread(&eq, sizeof(Equipo), 1, archivo)) {
@@ -112,6 +112,71 @@ void buscarEquipo() {
     }
     if (!encontrado) printf("Equipo no encontrado.\n");
     fclose(archivo);
+}
+void modificarEquipo() {
+    FILE *archivo = fopen("equipos.dat", "r+b");
+    if (!archivo) { printf("\nNo hay datos para modificar.\n"); return; }
+
+    int codBuscado, encontrado = 0;
+    Equipo eq;
+    printf("\nIngrese el codigo del equipo a modificar: ");
+    while(scanf("%d", &codBuscado) != 1) { limpiarBuffer(); printf("Error: Ingrese solo digitos validos: "); }
+    limpiarBuffer();
+
+    while (fread(&eq, sizeof(Equipo), 1, archivo)) {
+        if (eq.codigo == codBuscado) {
+            printf("Modificando equipo %s...\n", eq.nombre);
+            
+            do {
+                printf("Nuevo Responsable: ");
+                fgets(eq.responsable, 50, stdin); eq.responsable[strcspn(eq.responsable, "\n")] = 0;
+                if (!esSoloLetras(eq.responsable)) printf("Error: Ingrese solo letras.\n");
+            } while (!esSoloLetras(eq.responsable));
+
+            do {
+                printf("Nuevo Estado: ");
+                fgets(eq.estado, 20, stdin); eq.estado[strcspn(eq.estado, "\n")] = 0;
+                if (!esSoloLetras(eq.estado)) printf("Error: Ingrese solo letras.\n");
+            } while (!esSoloLetras(eq.estado));
+            
+            fseek(archivo, -sizeof(Equipo), SEEK_CUR); 
+            fwrite(&eq, sizeof(Equipo), 1, archivo);
+            encontrado = 1;
+            printf("Equipo modificado con exito.\n");
+            break;
+        }
+    }
+    if (!encontrado) printf("Equipo no encontrado.\n");
+    fclose(archivo);
+}
+
+void eliminarEquipo() {
+    FILE *archivo = fopen("equipos.dat", "rb");
+    if (!archivo) { printf("\nNo hay datos.\n"); return; }
+    
+    FILE *temp = fopen("temp.dat", "wb");
+    int codBuscado, encontrado = 0;
+    Equipo eq;
+
+    printf("\nIngrese el codigo del equipo a eliminar: ");
+    while(scanf("%d", &codBuscado) != 1) { limpiarBuffer(); printf("Error: Ingrese solo digitos validos: "); }
+    limpiarBuffer();
+
+    while (fread(&eq, sizeof(Equipo), 1, archivo)) {
+        if (eq.codigo == codBuscado) {
+            encontrado = 1;
+        } else {
+            fwrite(&eq, sizeof(Equipo), 1, temp); 
+        }
+    }
+    fclose(archivo);
+    fclose(temp);
+
+    remove("equipos.dat");
+    rename("temp.dat", "equipos.dat");
+
+    if (encontrado) printf("Equipo eliminado exitosamente.\n");
+    else printf("Equipo no encontrado.\n");
 }
 
 int main() {
@@ -128,8 +193,8 @@ int main() {
             case 1: registrarEquipo(); break;
             case 2: mostrarEquipos(); break;
             case 3: buscarEquipo(); break;
-            case 4: printf("\nOpcion 4 en construccion...\n"); break;
-            case 5: printf("\nOpcion 5 en construccion...\n"); break;
+            case 4: modificarEquipo(); break;
+            case 5: eliminarEquipo(); break;
             case 6: printf("Saliendo...\n"); break;
             default: printf("Opcion invalida.\n");
         }
