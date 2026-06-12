@@ -78,6 +78,41 @@ void registrarEquipo() {
     fclose(archivo);
     printf("Equipo registrado exitosamente en archivo.\n");
 }
+void mostrarEquipos() {
+    FILE *archivo = fopen("equipos.dat", "rb");
+    if (!archivo) { printf("\nNo hay equipos registrados.\n"); return; }
+
+    Equipo eq;
+    printf("\n--- EQUIPOS REGISTRADOS ---\n");
+    while (fread(&eq, sizeof(Equipo), 1, archivo)) {
+        printf("Codigo: %d | Nombre: %s | Marca: %s | Resp: %s | Est: %s | Prec: %.2f\n", 
+               eq.codigo, eq.nombre, eq.marca, eq.responsable, eq.estado, eq.precio);
+    }
+    fclose(archivo);
+}
+
+void buscarEquipo() {
+    FILE *archivo = fopen("equipos.dat", "rb");
+    if (!archivo) { printf("\nNo hay datos.\n"); return; }
+
+    int codBuscado, encontrado = 0;
+    Equipo eq;
+    printf("\nIngrese el codigo a buscar: ");
+    while(scanf("%d", &codBuscado) != 1) { limpiarBuffer(); printf("Error: Ingrese solo numeros: "); }
+    limpiarBuffer();
+
+    while (fread(&eq, sizeof(Equipo), 1, archivo)) {
+        if (eq.codigo == codBuscado) {
+            printf("\nEQUIPO ENCONTRADO:\n");
+            printf("Nombre: %s\nMarca: %s\nResponsable: %s\nEstado: %s\nPrecio: %.2f\n", 
+                   eq.nombre, eq.marca, eq.responsable, eq.estado, eq.precio);
+            encontrado = 1;
+            break;
+        }
+    }
+    if (!encontrado) printf("Equipo no encontrado.\n");
+    fclose(archivo);
+}
 
 int main() {
     int opcion;
@@ -91,8 +126,8 @@ int main() {
 
         switch(opcion) {
             case 1: registrarEquipo(); break;
-            case 2: printf("\nOpcion 2 en construccion...\n"); break;
-            case 3: printf("\nOpcion 3 en construccion...\n"); break;
+            case 2: mostrarEquipos(); break;
+            case 3: buscarEquipo(); break;
             case 4: printf("\nOpcion 4 en construccion...\n"); break;
             case 5: printf("\nOpcion 5 en construccion...\n"); break;
             case 6: printf("Saliendo...\n"); break;
